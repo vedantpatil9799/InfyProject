@@ -64,9 +64,9 @@ public class ProductsOrderDTO {
 	
 	public static ProductsOrderDTO valueOf(ProductsOrder productsOrder) {
 		ProductsOrderDTO productsOrderDTO=new ProductsOrderDTO();
-		productsOrderDTO.setORDERID(productsOrder.getCompositeKey().getORDERID());
+		productsOrderDTO.setORDERID(productsOrder.getORDERID());
 		productsOrderDTO.setPrice(productsOrder.getPrice());
-		productsOrderDTO.setPRODID(productsOrder.getCompositeKey().getPRODID());
+		productsOrderDTO.setPRODID(productsOrder.getPRODID());
 		productsOrderDTO.setQUANTITY(productsOrder.getQUANTITY());
 		productsOrderDTO.setSELLERID(productsOrder.getSELLERID());
 		productsOrderDTO.setSTATUS(productsOrder.getSTATUS());

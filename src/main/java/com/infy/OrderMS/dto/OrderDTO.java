@@ -1,33 +1,19 @@
 package com.infy.OrderMS.dto;
 
 import java.util.Date;
+import java.util.List;
 
 import com.infy.OrderMS.entity.OrderDetails;
 
-
-public class OrderDetailsDTO {
-	
+public class OrderDTO {
 	private int ORDERID;
 	private int BUYERID;
 	private double AMOUNT;
 	private Date date;
 	private String ADDRESS;
 	private String STATUS;
+	private List<ProductsOrderDTO> orderedProducts;
 	
-	
-	public OrderDetailsDTO() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public OrderDetailsDTO(int oRDERID, int bUYERID, double aMOUNT, Date date, String aDDRESS, String sTATUS) {
-		super();
-		ORDERID = oRDERID;
-		BUYERID = bUYERID;
-		AMOUNT = aMOUNT;
-		this.date = date;
-		ADDRESS = aDDRESS;
-		STATUS = sTATUS;
-	}
 	public int getORDERID() {
 		return ORDERID;
 	}
@@ -64,15 +50,23 @@ public class OrderDetailsDTO {
 	public void setSTATUS(String sTATUS) {
 		STATUS = sTATUS;
 	}
+
+	public List<ProductsOrderDTO> getOrderedProducts() {
+		return orderedProducts;
+	}
+	public void setOrderedProducts(List<ProductsOrderDTO> orderedProducts) {
+		this.orderedProducts = orderedProducts;
+	}
 	
-	public static OrderDetailsDTO valueOf(OrderDetails orderDetails) {
-		OrderDetailsDTO orderDetailsDTO=new OrderDetailsDTO();
-		orderDetailsDTO.setADDRESS(orderDetails.getADDRESS());
-		orderDetailsDTO.setAMOUNT(orderDetails.getAMOUNT());
-		orderDetailsDTO.setBUYERID(orderDetails.getBUYERID());
-		orderDetailsDTO.setDate(orderDetails.getDate());
-		orderDetailsDTO.setORDERID(orderDetails.getORDERID());
-		orderDetailsDTO.setSTATUS(orderDetails.getSTATUS());
-		return orderDetailsDTO;
+	public static OrderDTO valueOf(OrderDetails orderDetails,List<ProductsOrderDTO> list) {
+		OrderDTO orderDTO=new OrderDTO();
+		orderDTO.setORDERID(orderDetails.getORDERID());
+		orderDTO.setBUYERID(orderDetails.getBUYERID());
+		orderDTO.setAMOUNT(orderDetails.getAMOUNT());
+		orderDTO.setDate(orderDetails.getDate());
+		orderDTO.setADDRESS(orderDetails.getADDRESS());
+		orderDTO.setSTATUS(orderDetails.getSTATUS());
+		orderDTO.setOrderedProducts(list);
+		return orderDTO;
 	}
 }

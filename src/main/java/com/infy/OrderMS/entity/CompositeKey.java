@@ -18,6 +18,5 @@ public class CompositeKey implements Serializable{
 	public void setPRODID(int pRODID) {
 		PRODID = pRODID;
 	}
-	
-	
+
 }
