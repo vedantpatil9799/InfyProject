@@ -1,5 +1,6 @@
 package com.infy.OrderMS.dto;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.infy.OrderMS.entity.OrderDetails;
@@ -74,5 +75,30 @@ public class OrderDetailsDTO {
 		orderDetailsDTO.setORDERID(orderDetails.getORDERID());
 		orderDetailsDTO.setSTATUS(orderDetails.getSTATUS());
 		return orderDetailsDTO;
+	}
+	
+	public OrderDetails createEntity() {
+		OrderDetails orderDetails=new OrderDetails();
+		orderDetails.setBUYERID(this.getBUYERID());
+		orderDetails.setADDRESS(this.getADDRESS());
+		orderDetails.setAMOUNT(this.getAMOUNT());
+		orderDetails.setDate(this.getDate());
+		orderDetails.setORDERID(this.getORDERID());
+		orderDetails.setSTATUS(this.getSTATUS());
+		
+		return orderDetails;
+	}
+	
+	public static OrderDetails calculateAmount(PlaceOrderDTO placeOrderDTO,ProductDTO productDTO) {
+		
+		OrderDetails orderDetails=new OrderDetails();
+		
+		orderDetails.setBUYERID(placeOrderDTO.getBuyerID());
+		orderDetails.setADDRESS(placeOrderDTO.getAddress());
+		orderDetails.setAMOUNT(placeOrderDTO.getQuantity()*productDTO.getPrice());
+		orderDetails.setDate(new Date(System.currentTimeMillis()));
+		orderDetails.setSTATUS("Order Placed");
+		
+		return orderDetails;
 	}
 }

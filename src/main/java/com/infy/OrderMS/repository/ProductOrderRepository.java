@@ -13,4 +13,5 @@ import com.infy.OrderMS.entity.ProductsOrder;
 public interface ProductOrderRepository extends JpaRepository<ProductsOrder, CompositeKey>{
 	
 	List<ProductsOrder> findByORDERID(int ORDERID);
+	List<ProductsOrder> findBySELLERID(int SELLERID);
 }

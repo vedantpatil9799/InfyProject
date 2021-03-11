@@ -69,4 +69,19 @@ public class OrderDTO {
 		orderDTO.setOrderedProducts(list);
 		return orderDTO;
 	}
+	public OrderDTO(int oRDERID, int bUYERID, double aMOUNT, Date date, String aDDRESS, String sTATUS,List<ProductsOrderDTO> orderedProducts) {
+		super();
+		ORDERID = oRDERID;
+		BUYERID = bUYERID;
+		AMOUNT = aMOUNT;
+		this.date = date;
+		ADDRESS = aDDRESS;
+		STATUS = sTATUS;
+		this.orderedProducts = orderedProducts;
+	}
+	public OrderDTO() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 }

@@ -1,13 +1,12 @@
 package com.infy.OrderMS.dto;
 
-import com.infy.OrderMS.entity.OrderDetails;
 import com.infy.OrderMS.entity.ProductsOrder;
 
 public class ProductsOrderDTO {
 	private	int ORDERID;
 	private int PRODID;
 	private int SELLERID;
-	private String QUANTITY;
+	private int QUANTITY;
 	private String STATUS;
 	private double price;
 	
@@ -16,7 +15,7 @@ public class ProductsOrderDTO {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public ProductsOrderDTO(int oRDERID, int pRODID, int sELLERID, String qUANTITY, String sTATUS, double price) {
+	public ProductsOrderDTO(int oRDERID, int pRODID, int sELLERID, int qUANTITY, String sTATUS, double price) {
 		super();
 		ORDERID = oRDERID;
 		PRODID = pRODID;
@@ -25,12 +24,12 @@ public class ProductsOrderDTO {
 		STATUS = sTATUS;
 		this.price = price;
 	}
+
+	
 	public int getORDERID() {
 		return ORDERID;
 	}
-	public void setORDERID(int oRDERID) {
-		ORDERID = oRDERID;
-	}
+	
 	public int getPRODID() {
 		return PRODID;
 	}
@@ -40,13 +39,17 @@ public class ProductsOrderDTO {
 	public int getSELLERID() {
 		return SELLERID;
 	}
+	public void setORDERID(int oRDERID) {
+		ORDERID = oRDERID;
+	}
 	public void setSELLERID(int sELLERID) {
 		SELLERID = sELLERID;
 	}
-	public String getQUANTITY() {
+
+	public int getQUANTITY() {
 		return QUANTITY;
 	}
-	public void setQUANTITY(String qUANTITY) {
+	public void setQUANTITY(int qUANTITY) {
 		QUANTITY = qUANTITY;
 	}
 	public String getSTATUS() {
@@ -73,4 +76,15 @@ public class ProductsOrderDTO {
 		return productsOrderDTO;
 	}
 	
+	public static ProductsOrder saveProductOrder(int orderID,String status,PlaceOrderDTO placeOrderDTO,ProductDTO productDTO) {
+		ProductsOrder productsOrder=new ProductsOrder();
+		productsOrder.setORDERID(orderID);
+		productsOrder.setPrice(productDTO.getPrice());
+		productsOrder.setPRODID(productDTO.getProductId());
+		productsOrder.setQUANTITY(placeOrderDTO.getQuantity());
+		productsOrder.setSELLERID(productDTO.getSellerId());
+		productsOrder.setSTATUS(status);
+		
+		return productsOrder;
+	}
 }

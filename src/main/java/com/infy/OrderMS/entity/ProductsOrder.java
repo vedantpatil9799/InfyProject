@@ -12,9 +12,6 @@ import javax.persistence.Table;
 @IdClass(CompositeKey.class)
 public class ProductsOrder {
 	
-	/*
-	 * @EmbeddedId private CompositeKey compositeKey;
-	 */
 	@Id
 	private	int ORDERID;
 	@Id
@@ -22,39 +19,43 @@ public class ProductsOrder {
 	@Column(nullable = false)
 	private int SELLERID;
 	@Column(nullable = false)
-	private String QUANTITY;
+	private int QUANTITY;
 	@Column(nullable = false)
 	private String STATUS;
 	private double price;
 	
-	/*
-	 * public CompositeKey getCompositeKey() { return compositeKey; } public void
-	 * setCompositeKey(CompositeKey compositeKey) { this.compositeKey =
-	 * compositeKey; }
-	 */
 	
-	public int getSELLERID() {
-		return SELLERID;
-	}
+
 	public int getORDERID() {
 		return ORDERID;
 	}
-	public void setORDERID(int oRDERID) {
-		ORDERID = oRDERID;
-	}
+
 	public int getPRODID() {
 		return PRODID;
 	}
+
 	public void setPRODID(int pRODID) {
 		PRODID = pRODID;
 	}
+
+	public int getSELLERID() {
+		return SELLERID;
+	}
+
 	public void setSELLERID(int sELLERID) {
 		SELLERID = sELLERID;
 	}
-	public String getQUANTITY() {
+
+
+	public void setORDERID(int oRDERID) {
+		ORDERID = oRDERID;
+	}
+
+
+	public int getQUANTITY() {
 		return QUANTITY;
 	}
-	public void setQUANTITY(String qUANTITY) {
+	public void setQUANTITY(int qUANTITY) {
 		QUANTITY = qUANTITY;
 	}
 	public String getSTATUS() {
@@ -69,6 +70,20 @@ public class ProductsOrder {
 	public void setPrice(double price) {
 		this.price = price;
 	}
+	public ProductsOrder(int oRDERID, int pRODID, int sELLERID, int qUANTITY, String sTATUS, double price) {
+		super();
+		ORDERID = oRDERID;
+		PRODID = pRODID;
+		SELLERID = sELLERID;
+		QUANTITY = qUANTITY;
+		STATUS = sTATUS;
+		this.price = price;
+	}
+	public ProductsOrder() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 	
 	
 }
