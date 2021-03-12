@@ -2,11 +2,17 @@ package com.infy.OrderMS.dto;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.infy.OrderMS.entity.OrderDetails;
 
 
 public class OrderDetailsDTO {
+	
+	static Logger logger = LoggerFactory.getLogger("OrderDetailsDTO");
 	
 	private int ORDERID;
 	private int BUYERID;
@@ -89,15 +95,49 @@ public class OrderDetailsDTO {
 		return orderDetails;
 	}
 	
-	public static OrderDetails calculateAmount(PlaceOrderDTO placeOrderDTO,ProductDTO productDTO) {
+	public static OrderDetails calculateAmount(PlaceOrderDTO placeOrderDTO,
+												List<ProductDTO> listProductDTO,
+												BuyerDTO buyerDTO,
+												List<CartDTO> listCartDTO) {
 		
 		OrderDetails orderDetails=new OrderDetails();
 		
 		orderDetails.setBUYERID(placeOrderDTO.getBuyerID());
 		orderDetails.setADDRESS(placeOrderDTO.getAddress());
-		orderDetails.setAMOUNT(placeOrderDTO.getQuantity()*productDTO.getPrice());
+		
+		double discount=0;
+		if(buyerDTO.getRewardPoints()!=null) {
+			discount=buyerDTO.getRewardPoints()/4;
+		}
+		logger.info("discount applied for order is: "+discount);
+		
+		double amount=0;
+		for(int i=0;i<listCartDTO.size();i++) {
+			amount+=listCartDTO.get(i).getQuantity()*listProductDTO.get(i).getPrice();
+		}
+		
+		orderDetails.setAMOUNT(amount-discount);
+		
 		orderDetails.setDate(new Date(System.currentTimeMillis()));
 		orderDetails.setSTATUS("Order Placed");
+		
+		return orderDetails;
+	}
+	
+	public static OrderDetails calculateAmount(OrderDetailsDTO orderDetailsDTO, BuyerDTO buyerDTO) {
+		
+		double discount=0;
+		if(buyerDTO.getRewardPoints()!=null) {
+			discount=buyerDTO.getRewardPoints()/4;
+		}
+		logger.info("discount applied for order is: "+discount);
+		
+		OrderDetails orderDetails=new OrderDetails();
+		orderDetails.setBUYERID(orderDetailsDTO.getBUYERID());
+		orderDetails.setADDRESS(orderDetailsDTO.getADDRESS());
+		orderDetails.setAMOUNT(orderDetailsDTO.getAMOUNT()-discount);
+		orderDetails.setDate(new Date(System.currentTimeMillis()));
+		orderDetails.setSTATUS(orderDetailsDTO.getSTATUS());
 		
 		return orderDetails;
 	}

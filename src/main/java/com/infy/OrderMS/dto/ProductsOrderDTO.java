@@ -76,14 +76,25 @@ public class ProductsOrderDTO {
 		return productsOrderDTO;
 	}
 	
-	public static ProductsOrder saveProductOrder(int orderID,String status,PlaceOrderDTO placeOrderDTO,ProductDTO productDTO) {
+	public static ProductsOrder saveProductOrder(int orderID,String status, CartDTO cartDTO,ProductDTO productDTO) {
 		ProductsOrder productsOrder=new ProductsOrder();
 		productsOrder.setORDERID(orderID);
 		productsOrder.setPrice(productDTO.getPrice());
 		productsOrder.setPRODID(productDTO.getProductId());
-		productsOrder.setQUANTITY(placeOrderDTO.getQuantity());
+		productsOrder.setQUANTITY(cartDTO.getQuantity());
 		productsOrder.setSELLERID(productDTO.getSellerId());
 		productsOrder.setSTATUS(status);
+		
+		return productsOrder;
+	}
+	public static ProductsOrder saveProductOrder(int orderID, ProductsOrderDTO productsOrderDTO) {
+		ProductsOrder productsOrder=new ProductsOrder();
+		productsOrder.setORDERID(orderID);
+		productsOrder.setPrice(productsOrderDTO.getPrice());
+		productsOrder.setPRODID(productsOrderDTO.getPRODID());
+		productsOrder.setQUANTITY(productsOrderDTO.getQUANTITY());
+		productsOrder.setSELLERID(productsOrderDTO.getSELLERID());
+		productsOrder.setSTATUS(productsOrderDTO.getSTATUS());
 		
 		return productsOrder;
 	}

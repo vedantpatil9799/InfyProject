@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.infy.OrderMS.dto.BuyerDTO;
+import com.infy.OrderMS.dto.CartDTO;
 import com.infy.OrderMS.dto.OrderDTO;
 import com.infy.OrderMS.dto.OrderDetailsDTO;
 import com.infy.OrderMS.dto.PlaceOrderDTO;
@@ -28,15 +30,13 @@ public class OrderService {
 	OrderRepository orderRepository;
 	
 
-	public ProductsOrderDTO getProductOrderDetails(CompositeKey compositeKey) {
-		ProductsOrderDTO dto=null;
-		
-		Optional<ProductsOrder> optional=productOrderRepository.findById(compositeKey);
+	public OrderDetailsDTO getOrderDetails(Integer orderID) {
+		OrderDetailsDTO orderDetailsDTO=null;
+		Optional<OrderDetails> optional= orderRepository.findById(orderID);
 		if(optional.isPresent()) {
-			ProductsOrder order=optional.get();
-			dto=ProductsOrderDTO.valueOf(order);
+			orderDetailsDTO=OrderDetailsDTO.valueOf(optional.get());
 		}
-		return dto;
+		return orderDetailsDTO;
 	}
 	
 	public OrderDTO getOrderDetailByOrderID(Integer orderID) {
@@ -80,17 +80,50 @@ public class OrderService {
 		return list;
 	}
 	
-	public boolean placeOrder(PlaceOrderDTO placeOrderDTO,ProductDTO productDTO) {
+	public Integer placeOrder(PlaceOrderDTO placeOrderDTO,List<ProductDTO> listProductDTO,BuyerDTO buyerDTO,List<CartDTO> listCartDTO) {
 		
-		OrderDetails order=OrderDetailsDTO.calculateAmount(placeOrderDTO, productDTO);
-		OrderDetails orderDetails=orderRepository.save(order);
-		ProductsOrder product=ProductsOrderDTO.saveProductOrder(orderDetails.getORDERID(),orderDetails.getSTATUS(),placeOrderDTO,productDTO);
-		ProductsOrder productsOrder=productOrderRepository.save(product);
+		//step 4: create order
+		OrderDetails order=OrderDetailsDTO.calculateAmount(placeOrderDTO, listProductDTO,buyerDTO,listCartDTO);
+		//step:5 save order in orderDetails
+		orderRepository.save(order);
 		
-		if(orderDetails!=null && productsOrder!=null) {
-			return true;
+		//step:6 for each product make entry in productOrdered table
+		for(int i=0;i<listCartDTO.size();i++) {
+			ProductsOrder product=ProductsOrderDTO.saveProductOrder(order.getORDERID(),
+																	order.getSTATUS(),
+																	listCartDTO.get(i),
+																	listProductDTO.get(i));
+			productOrderRepository.save(product);
+		
 		}
 		
-		return false;
+		
+		return getRewardPoints(buyerDTO.getRewardPoints(), order.getAMOUNT());
+	}
+
+	public Integer placeOrder(OrderDetailsDTO orderDetailsDTO, List<ProductsOrderDTO> listProductsOrderDTO,BuyerDTO buyerDTO) {
+		
+		OrderDetails orderDetails=OrderDetailsDTO.calculateAmount(orderDetailsDTO,buyerDTO);
+		orderRepository.save(orderDetails);
+		
+		for(ProductsOrderDTO productsOrderDTO:listProductsOrderDTO) {
+			ProductsOrder product=ProductsOrderDTO.saveProductOrder(orderDetails.getORDERID(),productsOrderDTO);
+			productOrderRepository.save(product);
+		}
+		
+		return getRewardPoints(buyerDTO.getRewardPoints(), orderDetails.getAMOUNT());
+	}
+	
+	
+	public Integer getRewardPoints(Integer rewardPoints,double ammount) {
+		if(rewardPoints!=null) {
+			Integer newRewardPoints=(int)(ammount/100);
+			if(newRewardPoints>rewardPoints) {
+				return newRewardPoints-rewardPoints;
+			}else {
+				return rewardPoints-newRewardPoints;
+			}
+		}
+		return (int) (ammount/100);
 	}
 }

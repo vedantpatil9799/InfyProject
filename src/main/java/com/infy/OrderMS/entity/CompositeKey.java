@@ -4,20 +4,20 @@ import java.io.Serializable;
 
 
 public class CompositeKey implements Serializable{
-	private	long ORDERID;
-	private long PRODID;
-	public long getORDERID() {
+	private	int ORDERID;
+	private int PRODID;
+	public int getORDERID() {
 		return ORDERID;
 	}
-	public void setORDERID(long oRDERID) {
+	public void setORDERID(int oRDERID) {
 		ORDERID = oRDERID;
 	}
-	public long getPRODID() {
+	public int getPRODID() {
 		return PRODID;
 	}
-	public void setPRODID(long pRODID) {
+	public void setPRODID(int pRODID) {
 		PRODID = pRODID;
 	}
 
-
+	
 }
