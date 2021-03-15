@@ -97,6 +97,7 @@ public class OrderController {
 			//step9: update stock of all product 
 			logger.info("Updating stock of products....");
 			for(CartDTO cartDTO:listCartDTO) {
+			
 				new RestTemplate().delete(userCartUri+"delete/"+cartDTO.getBuyerId()+"/"+cartDTO.getProdId());
 				String response=new RestTemplate().getForObject(productUri+"updateStock/"+cartDTO.getProdId()+"/"+cartDTO.getQuantity(),String.class);
 			}
