@@ -29,4 +29,13 @@ public class CartDTO {
 		this.quantity = quantity;
 	}
 
+	@Override
+	public String toString() {
+		
+		return "CartDTO["
+				+ "buyerId=" + buyerId 
+				+ ", prodId=" + prodId  
+				+ ", quantity=" + quantity 
+				+ "]";
+	}
 }

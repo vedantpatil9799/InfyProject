@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -150,4 +151,11 @@ public class OrderController {
 		}
 		return new ResponseEntity<String>("Order Placed Successfully",HttpStatus.OK);
 	}
+	
+	@KafkaListener(topics = "Cart", groupId = "group_id", containerFactory = "cartListener")
+    public void consume(CartDTO cartDTO)
+    {
+		logger.info("message = " + cartDTO.getBuyerId());
+        System.out.println("message = " + cartDTO.getBuyerId());
+    }
 }
