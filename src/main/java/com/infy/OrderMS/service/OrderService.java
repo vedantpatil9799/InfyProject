@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.infy.OrderMS.dto.BuyerDTO;
 import com.infy.OrderMS.dto.CartDTO;
@@ -14,11 +18,11 @@ import com.infy.OrderMS.dto.OrderDetailsDTO;
 import com.infy.OrderMS.dto.PlaceOrderDTO;
 import com.infy.OrderMS.dto.ProductDTO;
 import com.infy.OrderMS.dto.ProductsOrderDTO;
-import com.infy.OrderMS.entity.CompositeKey;
 import com.infy.OrderMS.entity.OrderDetails;
 import com.infy.OrderMS.entity.ProductsOrder;
 import com.infy.OrderMS.repository.OrderRepository;
 import com.infy.OrderMS.repository.ProductOrderRepository;
+import com.infy.OrderMS.validator.OrderValidator;
 
 @Service
 public class OrderService {
@@ -29,6 +33,10 @@ public class OrderService {
 	@Autowired
 	OrderRepository orderRepository;
 	
+	@Value("${userBuyer.uri}")
+	String userBuyerUri;
+	
+	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public OrderDetailsDTO getOrderDetails(Integer orderID) {
 		OrderDetailsDTO orderDetailsDTO=null;
@@ -45,14 +53,7 @@ public class OrderService {
 		Optional<OrderDetails> optional=orderRepository.findById(orderID);
 		if(optional.isPresent()) {
 			OrderDetails orderDetails=optional.get();
-			List<ProductsOrderDTO> list=new ArrayList<ProductsOrderDTO>();
-			List<ProductsOrder> listProdcutsOrder=productOrderRepository.findByORDERID(orderID);
-
-			for(ProductsOrder productsOrder:listProdcutsOrder) {
-				list.add(ProductsOrderDTO.valueOf(productsOrder));
-			}
-			
-			orderDTO=OrderDTO.valueOf(orderDetails, list);
+			orderDTO=OrderDTO.valueOf(orderDetails, getProductByOrderID(orderID));
 		}
 		
 		return orderDTO;
@@ -80,7 +81,12 @@ public class OrderService {
 		return list;
 	}
 	
-	public Integer placeOrder(PlaceOrderDTO placeOrderDTO,List<ProductDTO> listProductDTO,BuyerDTO buyerDTO,List<CartDTO> listCartDTO) {
+	
+	public Integer placeOrder(PlaceOrderDTO placeOrderDTO,List<ProductDTO> listProductDTO,BuyerDTO buyerDTO,List<CartDTO> listCartDTO) throws Exception {
+		
+		if(!OrderValidator.checkQuantity(listProductDTO, listCartDTO)) {
+			throw new Exception("Products with this much quantity are not available");
+		}
 		
 		//step 4: create order
 		OrderDetails order=OrderDetailsDTO.calculateAmount(placeOrderDTO, listProductDTO,buyerDTO,listCartDTO);
@@ -101,7 +107,11 @@ public class OrderService {
 		return getRewardPoints(buyerDTO.getRewardPoints(), order.getAMOUNT());
 	}
 
-	public Integer placeOrder(OrderDetailsDTO orderDetailsDTO, List<ProductsOrderDTO> listProductsOrderDTO,BuyerDTO buyerDTO) {
+	public Integer placeOrder(OrderDetailsDTO orderDetailsDTO, List<ProductsOrderDTO> listProductsOrderDTO,BuyerDTO buyerDTO,List<ProductDTO> listProductDTO) throws Exception {
+		
+		if(!OrderValidator.checkReorderQuantity(listProductDTO, listProductsOrderDTO)) {
+			throw new Exception("Products with this much quantity are not available");
+		}
 		
 		OrderDetails orderDetails=OrderDetailsDTO.calculateAmount(orderDetailsDTO,buyerDTO);
 		orderRepository.save(orderDetails);
@@ -125,5 +135,70 @@ public class OrderService {
 			}
 		}
 		return (int) (ammount/100);
+	}
+	
+	
+	//get order details by buyerId
+	public List<OrderDTO> getOrderDetailsByBuyerID(Integer buyerID){
+		List<OrderDTO> list=new ArrayList<OrderDTO>();
+			
+		List<OrderDetails> listOrderDetails=orderRepository.findByBUYERID(buyerID);
+		for(OrderDetails orderDetails:listOrderDetails) {
+			OrderDTO orderDTO=new OrderDTO();
+			orderDTO=OrderDTO.valueOf(orderDetails, getProductByOrderID(orderDetails.getORDERID()));
+	
+			list.add(orderDTO);
+		}
+		return list;
+	}
+	
+	public boolean updateStatus(Integer orderId, String status) {
+		
+		if(!OrderValidator.checkStatus(status)) {
+			logger.info("invalid status");
+			return false;
+		}
+		
+		Optional<OrderDetails> optional= orderRepository.findById(orderId);
+		if(optional.isPresent()) {
+			OrderDetails orderDetails=optional.get();
+			orderDetails.setSTATUS(status);
+			
+			orderRepository.save(orderDetails);
+			List<ProductsOrder> listProdcutsOrder=productOrderRepository.findByORDERID(orderDetails.getORDERID());
+
+			for(ProductsOrder productsOrder:listProdcutsOrder) {
+				productsOrder.setSTATUS(status);
+				productOrderRepository.save(productsOrder);
+			}
+			
+			return true;
+		}
+		
+		
+		return false;
+	}
+
+	public boolean cancelOrder(Integer orderID) {
+		
+		Optional<OrderDetails> optional= orderRepository.findById(orderID);
+		if(optional.isPresent()) {
+			OrderDetails orderDetails=optional.get();
+			orderRepository.delete(orderDetails);
+			
+			List<ProductsOrder> listProdcutsOrder=productOrderRepository.findByORDERID(orderDetails.getORDERID());
+
+			for(ProductsOrder productsOrder:listProdcutsOrder) {
+				productOrderRepository.delete(productsOrder);
+			}
+			
+			BuyerDTO buyerDTO=new RestTemplate().getForObject(userBuyerUri+"get/"+orderDetails.getBUYERID(), BuyerDTO.class);
+			logger.info("fetching buyer details.."+buyerDTO.getRewardPoints());
+			new RestTemplate().put(userBuyerUri+"updateReward/"+orderDetails.getBUYERID()+"/"+getRewardPoints(buyerDTO.getRewardPoints(),orderDetails.getAMOUNT()), null);
+			logger.info("updating reward points.."+getRewardPoints(buyerDTO.getRewardPoints(),orderDetails.getAMOUNT()));
+			
+			return true;
+		}
+		return false;
 	}
 }

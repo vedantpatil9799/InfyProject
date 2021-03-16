@@ -1,9 +1,9 @@
 package com.infy.OrderMS.dto;
 
 public class CartDTO {
-	int buyerId;
-    int prodId;
-	int quantity;
+	private int buyerId;
+    private int prodId;
+	private int quantity;
 
 	public int getQuantity() {
 		return quantity;
@@ -27,15 +27,5 @@ public class CartDTO {
 
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
-	}
-
-	@Override
-	public String toString() {
-		
-		return "CartDTO["
-				+ "buyerId=" + buyerId 
-				+ ", prodId=" + prodId  
-				+ ", quantity=" + quantity 
-				+ "]";
 	}
 }

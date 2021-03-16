@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,6 @@ import com.infy.OrderMS.dto.OrderDetailsDTO;
 import com.infy.OrderMS.dto.PlaceOrderDTO;
 import com.infy.OrderMS.dto.ProductDTO;
 import com.infy.OrderMS.dto.ProductsOrderDTO;
-import com.infy.OrderMS.entity.CompositeKey;
 import com.infy.OrderMS.service.OrderService;
 
 @RestController
@@ -50,10 +50,15 @@ public class OrderController {
 	
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	@GetMapping(value="/{orderID}")
+	@GetMapping(value="/byOrderId/{orderID}")
 	public OrderDTO getOrderDetails(@PathVariable int orderID) {
 		
 		return orderService.getOrderDetailByOrderID(orderID);
+	}
+	
+	@GetMapping(value="/{buyerID}")
+	public List<OrderDTO> getOrderDeailsByBuyerID(@PathVariable int buyerID){
+		return orderService.getOrderDetailsByBuyerID(buyerID);
 	}
 	
 	@GetMapping(value="/seller/{sellerID}")
@@ -61,6 +66,23 @@ public class OrderController {
 		return orderService.getProductsBySellerID(sellerID);
 	}
 	
+	@PutMapping(value = "/updateStatus/{orderId}/{status}")
+	public ResponseEntity<String> updateStatus(@PathVariable Integer orderId,@PathVariable String status){
+		if(orderService.updateStatus(orderId,status)) {
+			return new ResponseEntity<String>("Order status updated successfully.",HttpStatus.OK);
+		}else {
+			return new ResponseEntity<String>("Something went wrong, please try again later.",HttpStatus.OK);
+		}
+	}
+	
+	@DeleteMapping(value="/cancelOrder/{orderId}")
+	public ResponseEntity<String> cancelOrder(@PathVariable Integer orderId){
+		if(orderService.cancelOrder(orderId)) {
+			return new ResponseEntity<String>("Order deleted suceessfully.",HttpStatus.OK);
+		}else {
+			return new ResponseEntity<String>("Something went wrong, please try again later.",HttpStatus.OK);
+		}
+	}
 	@PostMapping(value="/placeOrder")
 	public ResponseEntity<String> placeOrder(@RequestBody PlaceOrderDTO placeOrderDTO){
 		
@@ -132,8 +154,15 @@ public class OrderController {
 			logger.info("fetching buyer details....");
 			BuyerDTO buyerDTO=new RestTemplate().getForObject(userBuyerUri+"get/"+buyerId, BuyerDTO.class);
 			
+			logger.info("fetching product details....");
+			List<ProductDTO> listProductDTO=new ArrayList<ProductDTO>();
+			for(ProductsOrderDTO productsOrderDTO:listProductsOrderDTO) {
+				ProductDTO productDTO=new RestTemplate().getForObject(productUri+"get/"+productsOrderDTO.getPRODID(), ProductDTO.class);
+				listProductDTO.add(productDTO);
+			}
+			
 			//step5: place order
-			Integer rewardPoints=orderService.placeOrder(orderDetailsDTO,listProductsOrderDTO,buyerDTO);
+			Integer rewardPoints=orderService.placeOrder(orderDetailsDTO,listProductsOrderDTO,buyerDTO,listProductDTO);
 			
 			//step6: update reward points
 			logger.info("Updating reward points....");
@@ -151,11 +180,5 @@ public class OrderController {
 		}
 		return new ResponseEntity<String>("Order Placed Successfully",HttpStatus.OK);
 	}
-	
-	@KafkaListener(topics = "Cart", groupId = "group_id", containerFactory = "cartListener")
-    public void consume(CartDTO cartDTO)
-    {
-		logger.info("message = " + cartDTO.getBuyerId());
-        System.out.println("message = " + cartDTO.getBuyerId());
-    }
+
 }
