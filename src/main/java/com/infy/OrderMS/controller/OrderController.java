@@ -32,7 +32,6 @@ import com.infy.OrderMS.dto.ProductsOrderDTO;
 import com.infy.OrderMS.service.OrderService;
 
 @RestController
-@CrossOrigin
 @RequestMapping(value="/orders")
 public class OrderController {
 
@@ -90,7 +89,7 @@ public class OrderController {
 		try {
 			//step:1 fetch details from cart UserMS
 			logger.info("Fetching cart details....");
-			CartDTO[] object=new RestTemplate().getForObject(userCartUri+"getAll/"+placeOrderDTO.getBuyerID(), CartDTO[].class);
+			CartDTO[] object=new RestTemplate().getForObject(userCartUri+placeOrderDTO.getBuyerID(), CartDTO[].class);
 			List<CartDTO> listCartDTO=Arrays.asList(object);	
 			
 			if(listCartDTO == null || listCartDTO.isEmpty()) {
@@ -98,13 +97,13 @@ public class OrderController {
 			}
 			//step:2 fetch buyer details from userMS
 			logger.info("fetching buyer details....");
-			BuyerDTO buyerDTO=new RestTemplate().getForObject(userBuyerUri+"get/"+placeOrderDTO.getBuyerID(), BuyerDTO.class);
+			BuyerDTO buyerDTO=new RestTemplate().getForObject(userBuyerUri+placeOrderDTO.getBuyerID(), BuyerDTO.class);
 				
 			//step:3 fetch product details from productMS
 			logger.info("fetching product details....");
 			List<ProductDTO> listProductDTO=new ArrayList<ProductDTO>();
 			for(CartDTO cartDTO:listCartDTO) {
-				ProductDTO productDTO=new RestTemplate().getForObject(productUri+"get/"+cartDTO.getProdId(), ProductDTO.class);
+				ProductDTO productDTO=new RestTemplate().getForObject(productUri+cartDTO.getProdId(), ProductDTO.class);
 				listProductDTO.add(productDTO);
 			}
 			//step:4,5,6 calculate discounts and create the order
@@ -121,7 +120,7 @@ public class OrderController {
 			logger.info("Updating stock of products....");
 			for(CartDTO cartDTO:listCartDTO) {
 			
-				new RestTemplate().delete(userCartUri+"delete/"+cartDTO.getBuyerId()+"/"+cartDTO.getProdId());
+				new RestTemplate().delete(userCartUri+"remove/"+cartDTO.getBuyerId()+"/"+cartDTO.getProdId());
 				String response=new RestTemplate().getForObject(productUri+"updateStock/"+cartDTO.getProdId()+"/"+cartDTO.getQuantity(),String.class);
 			}
 		}catch(Exception e) {
@@ -143,7 +142,7 @@ public class OrderController {
 			OrderDetailsDTO orderDetailsDTO=orderService.getOrderDetails(orderId);
 			
 			//step2: validate buyerid
-			if(orderDetailsDTO==null || orderDetailsDTO.getBUYERID()!= buyerId) {
+			if(orderDetailsDTO==null || orderDetailsDTO.getBuyerId()!= buyerId) {
 				return new ResponseEntity<String>("Their is no order placed for this {OrderID: "+orderId+",BuyerID: "+buyerId+"}",HttpStatus.BAD_REQUEST);
 			}
 			
@@ -152,12 +151,12 @@ public class OrderController {
 			
 			//step4: fetch buyer details
 			logger.info("fetching buyer details....");
-			BuyerDTO buyerDTO=new RestTemplate().getForObject(userBuyerUri+"get/"+buyerId, BuyerDTO.class);
+			BuyerDTO buyerDTO=new RestTemplate().getForObject(userBuyerUri+buyerId, BuyerDTO.class);
 			
 			logger.info("fetching product details....");
 			List<ProductDTO> listProductDTO=new ArrayList<ProductDTO>();
 			for(ProductsOrderDTO productsOrderDTO:listProductsOrderDTO) {
-				ProductDTO productDTO=new RestTemplate().getForObject(productUri+"get/"+productsOrderDTO.getPRODID(), ProductDTO.class);
+				ProductDTO productDTO=new RestTemplate().getForObject(productUri+productsOrderDTO.getProdId(), ProductDTO.class);
 				listProductDTO.add(productDTO);
 			}
 			
@@ -171,7 +170,7 @@ public class OrderController {
 			//step7: update stock of all product 
 			logger.info("Updating stock of products....");
 			for(ProductsOrderDTO productsOrderDTO:listProductsOrderDTO) {
-				String response=new RestTemplate().getForObject(productUri+"updateStock/"+productsOrderDTO.getPRODID()+"/"+productsOrderDTO.getQUANTITY(),String.class);
+				String response=new RestTemplate().getForObject(productUri+"updateStock/"+productsOrderDTO.getProdId()+"/"+productsOrderDTO.getQuantity(),String.class);
 				logger.info(response);
 			}
 		}catch(Exception e) {

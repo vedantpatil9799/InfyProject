@@ -72,7 +72,7 @@ public class OrderService {
 	}
 	
 	public List<ProductsOrderDTO> getProductsBySellerID(Integer sellerID){
-		List<ProductsOrderDTO> list=new ArrayList<ProductsOrderDTO>();
+		List<ProductsOrderDTO> list=new ArrayList<>();
 		List<ProductsOrder> listProdcutsOrder=productOrderRepository.findBySELLERID(sellerID);
 		for(ProductsOrder productsOrder:listProdcutsOrder) {
 			list.add(ProductsOrderDTO.valueOf(productsOrder));
@@ -140,12 +140,11 @@ public class OrderService {
 	
 	//get order details by buyerId
 	public List<OrderDTO> getOrderDetailsByBuyerID(Integer buyerID){
-		List<OrderDTO> list=new ArrayList<OrderDTO>();
+		List<OrderDTO> list=new ArrayList<>();
 			
 		List<OrderDetails> listOrderDetails=orderRepository.findByBUYERID(buyerID);
 		for(OrderDetails orderDetails:listOrderDetails) {
-			OrderDTO orderDTO=new OrderDTO();
-			orderDTO=OrderDTO.valueOf(orderDetails, getProductByOrderID(orderDetails.getORDERID()));
+			OrderDTO orderDTO=OrderDTO.valueOf(orderDetails, getProductByOrderID(orderDetails.getORDERID()));
 	
 			list.add(orderDTO);
 		}
@@ -193,9 +192,11 @@ public class OrderService {
 			}
 			
 			BuyerDTO buyerDTO=new RestTemplate().getForObject(userBuyerUri+"get/"+orderDetails.getBUYERID(), BuyerDTO.class);
-			logger.info("fetching buyer details.."+buyerDTO.getRewardPoints());
-			new RestTemplate().put(userBuyerUri+"updateReward/"+orderDetails.getBUYERID()+"/"+getRewardPoints(buyerDTO.getRewardPoints(),orderDetails.getAMOUNT()), null);
-			logger.info("updating reward points.."+getRewardPoints(buyerDTO.getRewardPoints(),orderDetails.getAMOUNT()));
+			if(buyerDTO!=null) {
+				logger.info("fetching buyer details.."+buyerDTO.getRewardPoints());
+				new RestTemplate().put(userBuyerUri+"updateReward/"+orderDetails.getBUYERID()+"/"+getRewardPoints(buyerDTO.getRewardPoints(),orderDetails.getAMOUNT()), null);
+				logger.info("updating reward points.."+getRewardPoints(buyerDTO.getRewardPoints(),orderDetails.getAMOUNT()));
+			}
 			
 			return true;
 		}

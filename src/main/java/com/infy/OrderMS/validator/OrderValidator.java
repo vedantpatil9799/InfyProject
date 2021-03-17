@@ -34,7 +34,7 @@ public class OrderValidator {
 
 	public static boolean checkReorderQuantity(List<ProductDTO> listProductDTO, List<ProductsOrderDTO> listProductsOrderDTO) {
 		for(int i=0;i<listProductDTO.size();i++) {
-			if(listProductsOrderDTO.get(i).getQUANTITY() > listProductDTO.get(i).getStock()) {
+			if(listProductsOrderDTO.get(i).getQuantity() > listProductDTO.get(i).getStock()) {
 				return false;
 			}
 		}

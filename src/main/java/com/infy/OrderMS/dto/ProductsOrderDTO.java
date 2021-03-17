@@ -3,61 +3,68 @@ package com.infy.OrderMS.dto;
 import com.infy.OrderMS.entity.ProductsOrder;
 
 public class ProductsOrderDTO {
-	private	int ORDERID;
-	private int PRODID;
-	private int SELLERID;
-	private int QUANTITY;
-	private String STATUS;
+	private	int orderId;
+	private int prodId;
+	private int sellerId;
+	private int quantity;
+	private String status;
 	private double price;
 	
 	
 	public ProductsOrderDTO() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
-	public ProductsOrderDTO(int oRDERID, int pRODID, int sELLERID, int qUANTITY, String sTATUS, double price) {
+	
+	public ProductsOrderDTO(int orderId, int prodId, int sellerId, int quantity, String status, double price) {
 		super();
-		ORDERID = oRDERID;
-		PRODID = pRODID;
-		SELLERID = sELLERID;
-		QUANTITY = qUANTITY;
-		STATUS = sTATUS;
+		this.orderId = orderId;
+		this.prodId = prodId;
+		this.sellerId = sellerId;
+		this.quantity = quantity;
+		this.status = status;
 		this.price = price;
 	}
 
-	
-	public int getORDERID() {
-		return ORDERID;
-	}
-	
-	public int getPRODID() {
-		return PRODID;
-	}
-	public void setPRODID(int pRODID) {
-		PRODID = pRODID;
-	}
-	public int getSELLERID() {
-		return SELLERID;
-	}
-	public void setORDERID(int oRDERID) {
-		ORDERID = oRDERID;
-	}
-	public void setSELLERID(int sELLERID) {
-		SELLERID = sELLERID;
+	public int getOrderId() {
+		return orderId;
 	}
 
-	public int getQUANTITY() {
-		return QUANTITY;
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
 	}
-	public void setQUANTITY(int qUANTITY) {
-		QUANTITY = qUANTITY;
+
+	public int getProdId() {
+		return prodId;
 	}
-	public String getSTATUS() {
-		return STATUS;
+
+	public void setProdId(int prodId) {
+		this.prodId = prodId;
 	}
-	public void setSTATUS(String sTATUS) {
-		STATUS = sTATUS;
+
+	public int getSellerId() {
+		return sellerId;
 	}
+
+	public void setSellerId(int sellerId) {
+		this.sellerId = sellerId;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public double getPrice() {
 		return price;
 	}
@@ -67,12 +74,12 @@ public class ProductsOrderDTO {
 	
 	public static ProductsOrderDTO valueOf(ProductsOrder productsOrder) {
 		ProductsOrderDTO productsOrderDTO=new ProductsOrderDTO();
-		productsOrderDTO.setORDERID(productsOrder.getORDERID());
+		productsOrderDTO.setOrderId(productsOrder.getORDERID());
 		productsOrderDTO.setPrice(productsOrder.getPrice());
-		productsOrderDTO.setPRODID(productsOrder.getPRODID());
-		productsOrderDTO.setQUANTITY(productsOrder.getQUANTITY());
-		productsOrderDTO.setSELLERID(productsOrder.getSELLERID());
-		productsOrderDTO.setSTATUS(productsOrder.getSTATUS());
+		productsOrderDTO.setProdId(productsOrder.getPRODID());
+		productsOrderDTO.setQuantity(productsOrder.getQUANTITY());
+		productsOrderDTO.setSellerId(productsOrder.getSELLERID());
+		productsOrderDTO.setStatus(productsOrder.getSTATUS());
 		return productsOrderDTO;
 	}
 	
@@ -91,10 +98,10 @@ public class ProductsOrderDTO {
 		ProductsOrder productsOrder=new ProductsOrder();
 		productsOrder.setORDERID(orderID);
 		productsOrder.setPrice(productsOrderDTO.getPrice());
-		productsOrder.setPRODID(productsOrderDTO.getPRODID());
-		productsOrder.setQUANTITY(productsOrderDTO.getQUANTITY());
-		productsOrder.setSELLERID(productsOrderDTO.getSELLERID());
-		productsOrder.setSTATUS(productsOrderDTO.getSTATUS());
+		productsOrder.setPRODID(productsOrderDTO.getProdId());
+		productsOrder.setQUANTITY(productsOrderDTO.getQuantity());
+		productsOrder.setSELLERID(productsOrderDTO.getSellerId());
+		productsOrder.setSTATUS(productsOrderDTO.getStatus());
 		
 		return productsOrder;
 	}

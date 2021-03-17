@@ -13,83 +13,97 @@ public class OrderDetailsDTO {
 	
 	static Logger logger = LoggerFactory.getLogger("OrderDetailsDTO");
 	
-	private int ORDERID;
-	private int BUYERID;
-	private double AMOUNT;
+	private int orderId;
+	private int buyerId;
+	private double amount;
 	private Date date;
-	private String ADDRESS;
-	private String STATUS;
+	private String address;
+	private String status;
 	
 	
 	public OrderDetailsDTO() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
-	public OrderDetailsDTO(int oRDERID, int bUYERID, double aMOUNT, Date date, String aDDRESS, String sTATUS) {
+	
+	
+	public OrderDetailsDTO(int orderId, int buyerId, double amount, Date date, String address, String status) {
 		super();
-		ORDERID = oRDERID;
-		BUYERID = bUYERID;
-		AMOUNT = aMOUNT;
+		this.orderId = orderId;
+		this.buyerId = buyerId;
+		this.amount = amount;
 		this.date = date;
-		ADDRESS = aDDRESS;
-		STATUS = sTATUS;
+		this.address = address;
+		this.status = status;
 	}
-	public int getORDERID() {
-		return ORDERID;
-	}
-	public void setORDERID(int oRDERID) {
-		ORDERID = oRDERID;
-	}
-	public int getBUYERID() {
-		return BUYERID;
-	}
-	public void setBUYERID(int bUYERID) {
-		BUYERID = bUYERID;
-	}
-	public double getAMOUNT() {
-		return AMOUNT;
-	}
-	public void setAMOUNT(double aMOUNT) {
-		AMOUNT = aMOUNT;
-	}
+
+
 	public Date getDate() {
 		return date;
 	}
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	public String getADDRESS() {
-		return ADDRESS;
-	}
-	public void setADDRESS(String aDDRESS) {
-		ADDRESS = aDDRESS;
-	}
-	public String getSTATUS() {
-		return STATUS;
-	}
-	public void setSTATUS(String sTATUS) {
-		STATUS = sTATUS;
-	}
+
 	
+	public int getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
+	}
+
+	public int getBuyerId() {
+		return buyerId;
+	}
+
+	public void setBuyerId(int buyerId) {
+		this.buyerId = buyerId;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(double amount) {
+		this.amount = amount;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public static OrderDetailsDTO valueOf(OrderDetails orderDetails) {
 		OrderDetailsDTO orderDetailsDTO=new OrderDetailsDTO();
-		orderDetailsDTO.setADDRESS(orderDetails.getADDRESS());
-		orderDetailsDTO.setAMOUNT(orderDetails.getAMOUNT());
-		orderDetailsDTO.setBUYERID(orderDetails.getBUYERID());
+		orderDetailsDTO.setAddress(orderDetails.getADDRESS());
+		orderDetailsDTO.setAmount(orderDetails.getAMOUNT());
+		orderDetailsDTO.setBuyerId(orderDetails.getBUYERID());
 		orderDetailsDTO.setDate(orderDetails.getDate());
-		orderDetailsDTO.setORDERID(orderDetails.getORDERID());
-		orderDetailsDTO.setSTATUS(orderDetails.getSTATUS());
+		orderDetailsDTO.setOrderId(orderDetails.getORDERID());
+		orderDetailsDTO.setStatus(orderDetails.getSTATUS());
 		return orderDetailsDTO;
 	}
 	
 	public OrderDetails createEntity() {
 		OrderDetails orderDetails=new OrderDetails();
-		orderDetails.setBUYERID(this.getBUYERID());
-		orderDetails.setADDRESS(this.getADDRESS());
-		orderDetails.setAMOUNT(this.getAMOUNT());
+		orderDetails.setBUYERID(this.getBuyerId());
+		orderDetails.setADDRESS(this.getAddress());
+		orderDetails.setAMOUNT(this.getAmount());
 		orderDetails.setDate(this.getDate());
-		orderDetails.setORDERID(this.getORDERID());
-		orderDetails.setSTATUS(this.getSTATUS());
+		orderDetails.setORDERID(this.getOrderId());
+		orderDetails.setSTATUS(this.getStatus());
 		
 		return orderDetails;
 	}
@@ -106,7 +120,7 @@ public class OrderDetailsDTO {
 		
 		double discount=0;
 		if(buyerDTO.getRewardPoints()!=null) {
-			discount=buyerDTO.getRewardPoints()/4;
+			discount=buyerDTO.getRewardPoints()/4.0;
 		}
 		logger.info("discount applied for order is: "+discount);
 		
@@ -132,11 +146,11 @@ public class OrderDetailsDTO {
 		logger.info("discount applied for order is: "+discount);
 		
 		OrderDetails orderDetails=new OrderDetails();
-		orderDetails.setBUYERID(orderDetailsDTO.getBUYERID());
-		orderDetails.setADDRESS(orderDetailsDTO.getADDRESS());
-		orderDetails.setAMOUNT(orderDetailsDTO.getAMOUNT()-discount);
+		orderDetails.setBUYERID(orderDetailsDTO.getBuyerId());
+		orderDetails.setADDRESS(orderDetailsDTO.getAddress());
+		orderDetails.setAMOUNT(orderDetailsDTO.getAmount()-discount);
 		orderDetails.setDate(new Date(System.currentTimeMillis()));
-		orderDetails.setSTATUS(orderDetailsDTO.getSTATUS());
+		orderDetails.setSTATUS(orderDetailsDTO.getStatus());
 		
 		return orderDetails;
 	}
