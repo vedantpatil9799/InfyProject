@@ -191,7 +191,7 @@ public class OrderService {
 				productOrderRepository.delete(productsOrder);
 			}
 			
-			BuyerDTO buyerDTO=new RestTemplate().getForObject(userBuyerUri+"get/"+orderDetails.getBUYERID(), BuyerDTO.class);
+			BuyerDTO buyerDTO=new RestTemplate().getForObject(userBuyerUri+orderDetails.getBUYERID(), BuyerDTO.class);
 			if(buyerDTO!=null) {
 				logger.info("fetching buyer details.."+buyerDTO.getRewardPoints());
 				new RestTemplate().put(userBuyerUri+"updateReward/"+orderDetails.getBUYERID()+"/"+getRewardPoints(buyerDTO.getRewardPoints(),orderDetails.getAMOUNT()), null);
